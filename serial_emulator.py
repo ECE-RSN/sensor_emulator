@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Spyder Editor
  create pseudo serial ports using pseudoterminals
@@ -21,21 +23,21 @@ class SerialEmulator:
     def __init__(self,file,sample_time):
         self.sample_time = sample_time  
         self.file = file 
-        self.master = None
+        self.driver = None
         
     def write_file_to_pt(self):
         f = open(self.file, 'r') 
         Lines = f.readlines()
         for line in Lines:
             line1 = line + '\r'
-            os.write(self.master,str.encode(line1))
+            os.write(self.driver,str.encode(line1))
             time.sleep(self.sample_time) 
         f.close()
     
     def emulate_device(self):
         """Start the emulator"""
-        self.master,self.slave = pty.openpty() #open the pseudoterminal
-        print("The Pseudo device address: %s"%os.ttyname(self.slave))
+        self.driver,self.driven = pty.openpty() #open the pseudoterminal
+        print("The Pseudo device address: %s"%os.ttyname(self.driven))
         try:
             while True:
                 self.write_file_to_pt()
@@ -48,8 +50,8 @@ class SerialEmulator:
         self.emulate_device()
 
     def stop_simulator(self):
-        os.close(self.master)
-        os.close(self.slave)
+        os.close(self.driver)
+        os.close(self.driven)
         print("Terminated")
         
     

@@ -5,7 +5,7 @@ This serial emulator (and included data files) will behave like two of the senso
 The emulator has been tested with Python 3.8, written by Jagapreet Singh Nir, and updated by Kris Dorsey.
 
 To get the serial emulator, clone this repository with:
-$ git clone https://github.com/ECE-RSN-Staff/sensor_emulator/
+$ git clone https://github.com/ECE-RSN/sensor_emulator/
 
 The emulator has a dependency on the pyserial module (https://pypi.org/project/pyserial/), so you will need to first get that by: 
 $ pip3 install pyserial
@@ -16,11 +16,13 @@ $ python3 serial_emulator.py -h
 
 will give you help options to run the script and 
 
-$ python3 serial_emulator.py --file file --sample_time time
+$ python3 serial_emulator.py --file file --device_type device
 
-where file is the datafile you want to write to the serial port, and time is the sampling time at which you want to write (in Hz). For example, if I wanted to read the data in file GPS_Chicago.txt from the serial port, my command would be 
+where file is the datafile you want to write to the serial port, and device_type being the type of device you want to emulate. For example, if I wanted to read the data in file GPS_Chicago.txt from the serial port, my command would be 
 
-$ python3 serial_emulator.py --file GPS_Chicago.txt --sample_time 1
+$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps
+
+Note: Setting the device_type to gps would by default set the sampling rate to 1Hz
 
 The emulator will print the pseduo device address /dev/pts/N to the terminal, where N will be some system-generated integer. You can use this pseudo-address to test your driver or see output on minicom with 
     minicom -D /dev/pts/N
@@ -31,7 +33,7 @@ where N is the actual number that is printed to the terminal when you start the 
 
 The IMU also has a modifiable sampling time that you can use to test out your command for writing a change in sampling time to the sensor's registry. For example: 
 
-$ python serial_emulator.py --file imu_data.txt -V appropriate-VectorNav-string
+$ python serial_emulator.py --file imu_data.txt --device_type imu -V appropriate-VectorNav-string
 
 will "write" the string appropriate-VectorNav-string to the emulated VectorNav registry. If you have provided the correct string, it will change the sampling rate.
 

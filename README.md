@@ -16,15 +16,19 @@ $ python3 serial_emulator.py -h
 
 will give you help options to run the script and 
 
-$ python3 serial_emulator.py --file file --device_type device
+$ python3 serial_emulator.py --file file --device_type device --loop loop behavior
 
-where file is the datafile you want to write to the serial port, and device_type being the type of device you want to emulate. For example, if I wanted to read the data in file GPS_Chicago.txt from the serial port, my command would be 
+where file is the datafile you want to write to the serial port, device_type being the type of device you want to emulate, and loop_behavior is whether you want the emulator to loop through the file or quit once it has reached the end of the file. For example, if I wanted to read the data in file GPS_Chicago.txt once from the serial port, my command would be 
 
-$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps
+$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps --loop "no"
 
-Note: Setting the device_type to gps would by default set the sampling rate to 1Hz
+and if I wanted to loop through the data, the line would be 
 
-The emulator will print the pseduo device address /dev/pts/N to the terminal, where N will be some system-generated integer. You can use this pseudo-address to test your driver or see output on minicom with 
+$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps --loop "yes"
+
+Defaults: Setting the device_type to gps would by default set the sampling rate to 1 Hz. No loop flag will result in loop behavior, where the data is streamed until the user quits the process with command-C
+
+The emulator will print the pseudo device address /dev/pts/N to the terminal, where N will be some system-generated integer. You can use this pseudo-address to test your driver or see output on minicom with 
     minicom -D /dev/pts/N
 
 where N is the actual number that is printed to the terminal when you start the emulator.

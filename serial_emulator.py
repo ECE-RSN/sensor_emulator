@@ -2,14 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Spyder Editor
- create pseudo serial ports using pseudoterminals
- 
-Author: Jagatpreet Singh
-Created on: Jan 7, 2021
-Updated to incorporate VN frequency strings
-Kris Dorsey
-Edited on Dec 4, 2022
+ This script creates a pseudo serial ports using pseudoterminals
+ It can be used to run sensor data from GPS or Vectornav
+Authors: Jagatpreet Singh, Kris Dorsey, Arun Anbu
 """
 
 import os, pty
@@ -20,27 +15,33 @@ import argparse
 
 class SerialEmulator:
     
-    def __init__(self,file,sample_time):
+    def __init__(self,file,sample_time, loop_type):
         self.sample_time = sample_time  
         self.file = file 
         self.driver = None
+        self.driven = None
+        self.loop_type = loop_type
         
     def write_file_to_pt(self):
         f = open(self.file, 'r') 
         Lines = f.readlines()
         for line in Lines:
-            line1 = line + '\r'
-            os.write(self.driver,str.encode(line1))
-            time.sleep(self.sample_time) 
+            line1 = line + '\r\n'
+            os.write(self.driver, str.encode(line1, encoding='utf-8'))
+            time.sleep(self.sample_time)
         f.close()
+        print("Sensor emulator has reached the end of the file")
     
     def emulate_device(self):
         """Start the emulator"""
         self.driver,self.driven = pty.openpty() #open the pseudoterminal
         print("The Pseudo device address: %s"%os.ttyname(self.driven))
         try:
-            while True:
+            self.write_file_to_pt()
+            while self.loop_type == 'yes':
+                print("Restarting...\n")
                 self.write_file_to_pt()
+            self.stop_simulator()
                 
         except KeyboardInterrupt:
             self.stop_simulator()
@@ -65,7 +66,10 @@ if __name__=='__main__':
                     help='Write register string to pass to VN')
 
     parser.add_argument('-dev','--device_type', default = 'gps', type=str, dest='device_type',
-                    help='Write register string to pass to VN')
+                    help="Device type should be 'gps' or 'imu' ")
+    
+    parser.add_argument('-l','--loop', default = 'yes', type=str, dest='loop_behavior',
+                    help="Device type should be 'gps' or 'imu' ")
     
     sample_time = 0
     args = parser.parse_args()
@@ -86,6 +90,6 @@ if __name__=='__main__':
         sample_time = 1
     
     if sample_time > 0: 
-        print("Starting", args.device_type, "emulator with sample rate", str(sample_rate), "Hz")
-        se = SerialEmulator(args.file,sample_time)
+        print("Starting", args.device_type, "emulator with sample rate:", str(sample_rate), "Hz")
+        se = SerialEmulator(args.file, sample_time, args.loop_behavior)
         se.start_emulator()    

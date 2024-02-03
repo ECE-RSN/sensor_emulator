@@ -26,8 +26,9 @@ class SerialEmulator:
         f = open(self.file, 'r') 
         Lines = f.readlines()
         for line in Lines:
-            line1 = line + '\r\n'
-            os.write(self.driver, str.encode(line1, encoding='utf-8'))
+            write_string = line[:-1] + '\r\n'
+            write_bytes = str.encode(write_string, encoding='utf-8')
+            os.write(self.driver, write_bytes)
             time.sleep(self.sample_time)
         f.close()
         print("Sensor emulator has reached the end of the file")

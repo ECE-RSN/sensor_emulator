@@ -69,7 +69,7 @@ if __name__=='__main__':
                     help="Device type should be 'gps' or 'imu' ")
     
     parser.add_argument('-l','--loop', default = 'yes', type=str, dest='loop_behavior',
-                    help="Device type should be 'gps' or 'imu' ")
+                    help="This should be 'yes' for rtk_gps data' ")
     
     sample_time = 0
     args = parser.parse_args()

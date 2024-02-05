@@ -87,9 +87,10 @@ if __name__=='__main__':
             sample_rate = VN_list[2].split('*')
             sample_rate = sample_rate[0] 
             sample_time = 1/float(sample_rate)
-            print("Starting", args.device_type, "emulator with sample rate:", str(args.sample_rate), "Hz")
         else:
             print("This is not the correct string to change the sample rate.")
+        print("Starting", args.device_type, "emulator with sample rate:", str(args.sample_rate), "Hz")
+
     else: 
         print("Device type string must be 'gps' or 'imu'. Setting sample time to default 1 second")
     

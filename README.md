@@ -16,17 +16,19 @@ $ python3 serial_emulator.py -h
 
 will give you help options to run the script and 
 
-$ python3 serial_emulator.py --file file --device_type device --loop loop behavior
+$ python3 serial_emulator.py --file file --device_type device --loop loop behavior --rate sample_rate
 
-where file is the datafile you want to write to the serial port, device_type being the type of device you want to emulate, and loop_behavior is whether you want the emulator to loop through the file or quit once it has reached the end of the file. For example, if I wanted to read the data in file GPS_Chicago.txt once from the serial port, my command would be 
+where file is the datafile you want to write to the serial port, device_type being the type of device you want to emulate, and loop_behavior is whether you want the emulator to loop through the file or quit once it has reached the end of the file. For example, if I wanted to read the data in file GPS_Chicago.txt once from the serial port at a rate of 1 Hz, my command would be 
 
-$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps --loop "no"
+$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps --loop "no" --rate 1
 
 and if I wanted to loop through the data, the line would be 
 
-$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps --loop "yes"
+$ python3 serial_emulator.py --file GPS_Chicago.txt --device_type gps --loop "yes" --rate 1
 
-Defaults: Setting the device_type to gps would by default set the sampling rate to 1 Hz. No loop flag will result in loop behavior, where the data is streamed until the user quits the process with command-C
+Defaults: Setting the device_type to gps would by default set the sampling rate to 1 Hz, while setting the device_type to imu sets the default to 200 Hz. You may need to sample at 12 Hz for RTK data. 
+
+No loop flag will result in loop behavior, where the data is streamed until the user quits the process with command-C
 
 The emulator will print the pseudo device address /dev/pts/N to the terminal, where N will be some system-generated integer. You can use this pseudo-address to test your driver or see output on minicom with 
     minicom -D /dev/pts/N

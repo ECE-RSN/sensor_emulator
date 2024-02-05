@@ -72,11 +72,14 @@ if __name__=='__main__':
     parser.add_argument('-l','--loop', default = 'yes', type=str, dest='loop_behavior',
                     help="This should be 'yes' for looping ")
     
-    sample_time = 0
+    parser.add_argument('-r','--rate', default = 1, type=float, dest='sample_rate',
+                    help="This should be 'yes' for looping ")
+    
+    
     args = parser.parse_args()
-    if (args.device_type == 'gps'):
-        sample_time = 1
-        sample_rate = 1//sample_time
+    sample_time = 1/float(args.sample_rate)
+    if (args.device_type == 'gps') or args.device_type == 'imu':
+        print("Starting", args.device_type, "emulator with sample rate:", str(args.sample_rate), "Hz")
     elif (args.device_type == 'imu'):
         VN_string = args.VN_string.decode('utf-8')
         VN_list = VN_string.split(",")
@@ -84,13 +87,12 @@ if __name__=='__main__':
             sample_rate = VN_list[2].split('*')
             sample_rate = sample_rate[0] 
             sample_time = 1/float(sample_rate)
+            print("Starting", args.device_type, "emulator with sample rate:", str(args.sample_rate), "Hz")
         else:
             print("This is not the correct string to change the sample rate.")
     else: 
         print("Device type string must be 'gps' or 'imu'. Setting sample time to default 1 second")
-        sample_time = 1
     
     if sample_time > 0: 
-        print("Starting", args.device_type, "emulator with sample rate:", str(sample_rate), "Hz")
         se = SerialEmulator(args.file, sample_time, args.loop_behavior)
         se.start_emulator()    

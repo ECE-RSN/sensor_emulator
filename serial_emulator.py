@@ -73,7 +73,7 @@ if __name__=='__main__':
                     help="This should be 'yes' for looping ")
     
     parser.add_argument('-r','--rate', default = 1, type=float, dest='sample_rate',
-                    help="This should be 'yes' for looping ")
+                    help="This should be a float at the desired rate ")
     
     
     args = parser.parse_args()

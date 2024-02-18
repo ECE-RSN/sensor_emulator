@@ -66,7 +66,7 @@ if __name__=='__main__':
     parser.add_argument('-dev','--device_type', required = 'true', type=str, dest='device_type',
                     help="Device type must be 'gps', 'imu', or 'rtk'")
     
-    parser.add_argument('-V','--VN_reg', default = '$VNWRG,07,200*XX', type=str, dest='VN_reg',
+    parser.add_argument('-V','--VN_reg', default = b'$VNWRG,07,200*XX', type=str, dest='VN_reg',
                     help='Write register command for sample rate to pass to VN')
     
     parser.add_argument('-l','--loop', default = 'yes', type=str, dest='loop_behavior',
@@ -84,9 +84,13 @@ if __name__=='__main__':
         elif args.device_type == 'rtk':
             sample_rate = 12 #RTK hardware publishes 12 nav sets every second
         elif args.device_type == 'imu':
-            VN_reg = args.VN_reg
+            if type(args.VN_reg) == bytes:
+                VN_reg = args.VN_reg.decode('utf-8')
+            else:
+                VN_reg = args.VN_reg
             VN_list = VN_reg.split(",")
-            if (VN_list[0] == 'b$VNWRG'  and VN_list[1] == '07'):
+            print(VN_list)
+            if (VN_list[0] == '$VNWRG'  and type(args.VN_reg) == bytes) or (VN_list[0] == 'b$VNWRG'  and type(args.VN_reg) == str) and VN_list[1] == '07':
                 sample_rate = VN_list[2].split('*')
                 sample_rate = float(sample_rate[0])
             
@@ -95,6 +99,6 @@ if __name__=='__main__':
         se.start_emulator() 
 
     except FileNotFoundError:
-        print("You did not specify the correct data file or device type. Please try again.")
+        print("You did not specify the correct file name. Please try again.")
     except NameError:
-        print("You did not specify the correct device type or VectorNav String. Please try again.")
+        print("You did not specify the correct device type or VectorNav write register command. Please try again.")

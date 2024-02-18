@@ -89,7 +89,6 @@ if __name__=='__main__':
             else:
                 VN_reg = args.VN_reg
             VN_list = VN_reg.split(",")
-            print(VN_list)
             if (VN_list[0] == '$VNWRG'  and type(args.VN_reg) == bytes) or (VN_list[0] == 'b$VNWRG'  and type(args.VN_reg) == str) and VN_list[1] == '07':
                 sample_rate = VN_list[2].split('*')
                 sample_rate = float(sample_rate[0])

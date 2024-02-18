@@ -39,5 +39,5 @@ The IMU also has a modifiable sampling time that you can use to test out your co
 
 $ python serial_emulator.py --file imu_data.txt --device_type imu -V appropriate-VectorNav-string
 
-will "write" the appropriate-VectorNav command to the emulated VectorNav registry. If you have provided the correct command, it will change the sampling rate. Please recall that we need to write in bytes, not a string
+will "write" the appropriate-VectorNav command to the emulated VectorNav registry. If you have provided the correct command, it will change the sampling rate. Please include this command as exactly what you would write to the VN to have it change the rate.
 

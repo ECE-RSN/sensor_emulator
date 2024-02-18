@@ -15,7 +15,7 @@ import argparse
 
 class SerialEmulator:
     
-    def __init__(self,file,sample_time, loop_type):
+    def __init__(self,file, sample_time, loop_type):
         self.sample_time = sample_time  
         self.file = file 
         self.driver = None
@@ -63,37 +63,38 @@ if __name__=='__main__':
     parser.add_argument('-f','--file', required=True, type=str, dest='file',
                     help='data file to simulate device')   
 
-    parser.add_argument('-V','--VN_string', default = b'$VNWRG,07,200*XX', type=str, dest='VN_string',
-                    help='Write register string to pass to VN')
-
-    parser.add_argument('-dev','--device_type', default = 'gps', type=str, dest='device_type',
-                    help="Device type should be 'gps' or 'imu' ")
+    parser.add_argument('-dev','--device_type', required = 'true', type=str, dest='device_type',
+                    help="Device type must be 'gps', 'imu', or 'rtk'")
+    
+    parser.add_argument('-V','--VN_reg', default = '$VNWRG,07,200*XX', type=str, dest='VN_reg',
+                    help='Write register command for sample rate to pass to VN')
     
     parser.add_argument('-l','--loop', default = 'yes', type=str, dest='loop_behavior',
                     help="This should be 'yes' for looping ")
     
-    parser.add_argument('-r','--rate', default = 1, type=float, dest='sample_rate',
-                    help="This should be a float at the desired rate ")
-    
-    
     args = parser.parse_args()
-    sample_time = 1/float(args.sample_rate)
-    if (args.device_type == 'gps') or args.device_type == 'imu':
-        print("Starting", args.device_type, "emulator with sample rate:", str(args.sample_rate), "Hz")
-    elif (args.device_type == 'imu'):
-        VN_string = args.VN_string.decode('utf-8')
-        VN_list = VN_string.split(",")
-        if (VN_list[0] == "$VNWRG" and VN_list[1] == "07"):
-            sample_rate = VN_list[2].split('*')
-            sample_rate = sample_rate[0] 
-            sample_time = 1/float(sample_rate)
-        else:
-            print("This is not the correct string to change the sample rate.")
-        print("Starting", args.device_type, "emulator with sample rate:", str(args.sample_rate), "Hz")
+    valid_devices = ['gps','rtk','imu']
 
-    else: 
-        print("Device type string must be 'gps' or 'imu'. Setting sample time to default 1 second")
-    
-    if sample_time > 0: 
-        se = SerialEmulator(args.file, sample_time, args.loop_behavior)
-        se.start_emulator()    
+    try: 
+        f = open(args.file, 'r') 
+        time.sleep(0.1)
+        f.close()   
+        if args.device_type == 'gps':
+            sample_rate = 5 #GPS pucks publish 5 nav sets every second
+        elif args.device_type == 'rtk':
+            sample_rate = 12 #RTK hardware publishes 12 nav sets every second
+        elif args.device_type == 'imu':
+            VN_reg = args.VN_reg
+            VN_list = VN_reg.split(",")
+            if (VN_list[0] == 'b$VNWRG'  and VN_list[1] == '07'):
+                sample_rate = VN_list[2].split('*')
+                sample_rate = float(sample_rate[0])
+            
+        print("Starting", args.device_type, "emulator with sample rate:", str(sample_rate), "Hz")
+        se = SerialEmulator(args.file, 1/sample_rate, args.loop_behavior)
+        se.start_emulator() 
+
+    except FileNotFoundError:
+        print("You did not specify the correct data file or device type. Please try again.")
+    except NameError:
+        print("You did not specify the correct device type or VectorNav String. Please try again.")
